@@ -1,0 +1,22 @@
+<html ng-app='mindview'>
+<head>
+  <link rel="stylesheet" type="text/css" href="/lib/bootstrap-css-only/css/bootstrap.css.min.css" />
+  <link rel="stylesheet" type="text/css" href="/lib/bootstrap-css-only/css/bootstrap-theme.min.css" />
+  <link href='http://fonts.googleapis.com/css?family=VT323' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" type="text/css" href="/styles/css/app.css" />
+</head>
+<body>
+<div ng-controller='braindata'>
+  <ul>
+    <li ng-repeat='(wave, data) in eeg'>{{ wave }} : {{ data }}</li>
+  </ul>
+  <p>Attention Level: {{ attention }}
+  <p>Meditation Level: {{ meditation }}
+  <p>Wave: {{ wave }}</p>
+</div>
+<script src="/socket.io/socket.io.js"></script>
+<script src='/lib/angular/angular.js'></script>
+<script src='/lib/angular-socket-io/socket.min.js'></script>
+<script src='mindview.js'></script>
+</body>
+</html>

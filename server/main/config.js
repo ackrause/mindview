@@ -1,9 +1,13 @@
-"use strict";
+'use strict';
 
 var mongoose    = require('mongoose'),
     morgan      = require('morgan'),
     bodyParser  = require('body-parser'),
-    middle      = require('./middleware');
+    middle      = require('./middleware'),
+    NeuroSky    = require('./neurosky.js'),
+    server      = require('http'),
+    io          = require('socket.io'),
+    Cylon       = require('cylon');
 
 mongoose.connect(process.env.DB_URL || 'mongodb://localhost/mindview');
 /*
@@ -19,4 +23,14 @@ module.exports = exports = function (app, express, routers) {
   app.use('/note', routers.NoteRouter);
   app.use(middle.logError);
   app.use(middle.handleError);
+
+  // Set up sockets
+  server = server.createServer(app);
+  server.listen(8000);
+  io = io.listen(server);
+
+  // Start connection to NeuroSky Mobile Headset
+  var neurosky = new NeuroSky(io);
+  Cylon.robot(neurosky);
+  Cylon.start();
 };

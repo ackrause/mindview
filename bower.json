@@ -3,8 +3,8 @@
   "version": "",
   "dependencies": {
     "bootstrap-css-only": "*",
-    "angular": "*" ,
-    "ng-Fx": "*"
+    "angular": "*",
+    "ng-Fx": "*",
+    "angular-socket-io": "~0.6.0"
   }
 }
-

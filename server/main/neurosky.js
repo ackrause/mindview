@@ -1,42 +1,26 @@
-/* global require, Logger, module */
 'use strict';
 
-var Cylon = require('cylon');
+var NeuroSky = function(io) {
 
-Cylon.robot({
-  connection: {
-    name: 'neurosky', 
-    adaptor: 'neurosky',
-    port: '/dev/tty.MindWaveMobile-DevA'
-  },
-
-  device: {
-    name: 'headset',
-    driver: 'neurosky'
-  },
-
-  work: function (my) {
+  NeuroSky.prototype.connection = { name: 'neurosky', adaptor: 'neurosky', port: '/dev/tty.MindWaveMobile-DevA' };
+  NeuroSky.prototype.device = {name: 'headset', driver: 'neurosky'};
+  NeuroSky.prototype.work = function(my) {
+    my.headset.on('blink', function(data) {
+      io.sockets.emit('blink', data);
+    });
     my.headset.on('eeg', function(data) {
-       Logger.info('eeg:' + data);
+      io.sockets.emit('eeg', data);
     });
     my.headset.on('attention', function(data) {
-      Logger.info('attention: ' + data);
+      io.sockets.emit('attention', data);
     });
     my.headset.on('meditation', function(data) {
-      Logger.info('meditation:' + data);
+      io.sockets.emit('meditation', data);
     });
-    my.headset.on('blink', function(data) {
-      Logger.info('blink: ' + data);
-    });
-    my.headset.on('signal', function(data) {
-      Logger.info('signal: ' + data);
-    });
-     my.headset.on('wave', function(data) {
-       Logger.info('wave: ' + data);
-    });
-  }
-});
+    my.headset.on('wave', function(data) {
+      io.sockets.emit('wave', data);
+    })
+  };
+};
 
-Cylon.start();
-
-module.exports = Cylon;
+module.exports = NeuroSky;

@@ -10,6 +10,4 @@ require('./config.js')(app, express, routers);
 
 require('../note/note_routes.js')(NoteRouter);
 
-require('./neurosky.js');
-
 module.exports = exports = app;
