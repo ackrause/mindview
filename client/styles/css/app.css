@@ -1,7 +1,38 @@
 body {
-  font-family: 'VT323', sans-serif;
+  color: #fff;
+  background-color: #000;
+  font-family: 'VT323', serif;
+  padding-left: 50px;
+  padding-right: 50px`;
+}
+
+h1 {
+  font-family: 'Nova Mono', sans-serif;
+}
+
+.float {
+  float: right;
+}
+
+ul {
+  padding-left: 0;
+}
+
+li {
+  list-style: none;
 }
 
 #messages {
   color: lightgrey
+}
+
+/*******************
+ SVG ELEMENTS
+ *******************/
+rect {
+  fill: #f00;
+}
+
+line {
+  stroke: #0f0;
 }

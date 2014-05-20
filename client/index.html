@@ -1,22 +1,28 @@
 <html ng-app='mindview'>
 <head>
-  <link rel="stylesheet" type="text/css" href="/lib/bootstrap-css-only/css/bootstrap.css.min.css" />
+  <link rel="stylesheet" type="text/css" href="/lib/bootstrap-css-only/css/bootstrap.min.css" />
   <link rel="stylesheet" type="text/css" href="/lib/bootstrap-css-only/css/bootstrap-theme.min.css" />
-  <link href='http://fonts.googleapis.com/css?family=VT323' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Nova+Mono|VT323' rel='stylesheet' type='text/css'>
   <link rel="stylesheet" type="text/css" href="/styles/css/app.css" />
 </head>
 <body>
+<h1>MindView</h1>
+<hr />
 <div ng-controller='braindata'>
-  <ul>
-    <li ng-repeat='(wave, data) in eeg'>{{ wave }} : {{ data }}</li>
-  </ul>
-  <p>Attention Level: {{ attention }}
-  <p>Meditation Level: {{ meditation }}
-  <p>Wave: {{ wave }}</p>
+  <d3-bars data='eeg' label='name'></d3-bars>
+  <div class='col-md-4'>
+    <ul>
+      <li ng-repeat='wave in eeg'>{{wave.name}}: {{wave.value}}</li>
+    </ul>
+    <p>Attention Level: {{ attention }} (Max: {{ maxAttention }})</p>
+    <p>Meditation Level: {{ meditation }} (Max: {{ maxMeditation }})</p>
+    <p>Wave: {{ wave }}</p>
+  </div>
 </div>
 <script src="/socket.io/socket.io.js"></script>
 <script src='/lib/angular/angular.js'></script>
 <script src='/lib/angular-socket-io/socket.min.js'></script>
+<script src='//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.backbone.js'></script>
 <script src='mindview.js'></script>
 </body>
 </html>
