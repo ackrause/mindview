@@ -30,52 +30,39 @@ directive('d3Bars', ['d3', function(d3) {
   return {
     restrict: 'EA',
     scope: {
-      data: "=",
-      label: "@",
+      data: '=',
+      label: '@',
     },
-    link: function(scope, iElement, iAttrs) {
-      var svg = d3.select(iElement[0])
-          .append("svg")
-          .attr("width", "50%")
+    link: function(scope, element) {
+      element = element[0];  // element is passed in as an array
 
-      // on window resize, re-render d3 canvas
-      window.onresize = function() {
-        return scope.$apply();
-      };
-      scope.$watch(function(){
-          return angular.element(window)[0].innerWidth;
-        }, function(){
-          return scope.render(scope.data);
-        }
-      );
+      // create svg element
+      var svg = d3.select(element)
+          .append('svg')
+          .attr('width', '50%');
 
-      // watch for data changes and re-render
-      scope.$watch('data', function(newVals, oldVals) {
-        return scope.render(newVals);
+      // watch for data changes and update
+      scope.$watch('data', function(newVals) {
+        return scope.update(newVals);
       }, true);
 
-      // define render function
-      scope.render = function(data){
 
-        // setup variables
+      scope.update = function(data){
+        // set up variables
         var width, height, max;
-        width = d3.select(iElement[0])[0][0].offsetWidth - 20;
-          // 20 is for margins and can be changed
+        width = d3.select(element)[0][0].offsetWidth - 20;
         height = scope.data.length * 35;
-          // 35 = 30(bar height) + 5(margin between bars)
-        max = 98;
-          // this can also be found dynamically when the data is not static
-        max = Math.max.apply(Math, _.map(data, function(value) { return value.value; }));
+        max = Math.max.apply(Math, _.map(data, function(d) { return d.value; }));
         if (max === 0) { max = 1; }
 
         // set the height based on the calculations above
         svg.attr('height', height);
 
-        //create the rectangles for the bar chart
-        var bars = svg.selectAll("rect")
-            .data(data, function(d) { return d.name; })
+        //select the rectangles for the bar chart
+        var bars = svg.selectAll('rect')
+            .data(data, function(d) { return d.name; });
           
-        // UPDATE
+        // UPDATE EXISTING BARS
         bars.transition()
           .duration(1000)
           .attr('width', function(d) {
@@ -83,34 +70,95 @@ directive('d3Bars', ['d3', function(d3) {
           });
 
 
-        // Enter
-        // Create new elements as they are needed
+        // CREATE NEW BARS IF NEEDED (first update)
         bars.enter()
-            .append("rect")
-            .attr("height", 30) // height of each bar
-            .attr("width", function(d) { return this.getAttribute('width') || 0 }) // initial width of 0 for transition
-            .attr("x", 10) // half of the 20 side margin specified above
-            .attr("y", function(d, i){
+            .append('rect')
+            .attr('height', 30)
+            .attr('width', function() { return this.getAttribute('width') || 0; })
+            .attr('x', 10)
+            .attr('y', function(d, i){
               return i * 35;
-            }) // height + margin between bars
+            })
             .transition()
-              .duration(1000) // time of duration
-              .attr("width", function(d){
+              .duration(1000)
+              .attr('width', function(d){
                 return d.value/(max/width);
-              }); // width based on scale
+              });
 
-        svg.selectAll("text")
+        // Add labels to bars
+        svg.selectAll('text')
           .data(data)
           .enter()
-            .append("text")
-            .attr("fill", "#fff")
-            .attr("y", function(d, i){return i * 35 + 22;})
-            .attr("x", 15)
+            .append('text')
+            .attr('fill', '#fff')
+            .attr('y', function(d, i){return i * 35 + 22;})
+            .attr('x', 15)
             .text(function(d){return d[scope.label];});
-
       };
     }
-    };
+  };
+}]).
+
+directive('d3Ball', ['d3', function(d3) {
+  return {
+    restrict: 'EA',
+    scope: {
+      x: '=',
+      y: '=',
+    },
+    link: function(scope, element) {
+      element = element[0]; // element is passed in as an array
+
+      // create svg element
+      var svg = d3.select(element)
+          .append('svg')
+          .attr('width', '100%')
+          .attr('height', 400);
+
+      // watch for data changes and update
+      scope.$watch('x', function(newX) {
+        console.log(newX);
+        scope.update([newX, scope.y]);
+      }, true);
+      scope.$watch('y', function(newY) {
+        scope.update([scope.x, newY]);
+      }, true);
+
+      scope.update = function(data) {
+        var width, height;
+        width = d3.select(element)[0][0].offsetWidth - 20;
+        height = 200;
+
+        // scale data to fit svg element
+        data[0] = data[0]/150 * (width - 40) + 20;
+        data[1] = height - (data[1]/150 * (height - 40) + 20);
+
+        // select the circle
+        var circle = svg.selectAll('circle')
+            .data([data]);
+
+        console.dir(circle);
+
+        // Update existing circle
+        circle.transition()
+          .duration(1000)
+          .attr('cx', function(d) { return d[0]; })
+          .attr('cy', function(d) { return d[1]; });
+
+        // Create new circle if needed (first update)
+        circle.enter()
+          .append('circle')
+          .attr('cx', width/2)
+          .attr('cy', height/2)
+          .attr('r', 20)
+          .attr('fill', '#f0F')
+          .transition()
+            .duration(1000)
+            .attr('cx', function(d) { return d[0]; })
+            .attr('cy', function(d) { return d[1]; });
+      };
+    }
+  };
 }]).
 
 controller('braindata', function($scope, socket) {

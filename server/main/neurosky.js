@@ -40,7 +40,7 @@ var NeuroSky = function(io) {
     });
     my.headset.on('wave', throttle(function(data) {
       io.sockets.emit('wave', data);
-    }));
+    }, 250));
   };
 };
 
